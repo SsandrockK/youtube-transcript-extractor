@@ -4,7 +4,23 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>YouTube Transcript Extractor</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --bg-dark: #0a0a0f;
+            --bg-card: #12121a;
+            --bg-card-hover: #1a1a24;
+            --accent: #ff6b4a;
+            --accent-glow: rgba(255, 107, 74, 0.3);
+            --text-primary: #f5f5f7;
+            --text-secondary: #8b8b9e;
+            --border: #2a2a3a;
+            --success: #4ade80;
+            --error: #f87171;
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -12,79 +28,171 @@
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-primary);
             min-height: 100vh;
-            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        /* Animated background */
+        .bg-grid {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                linear-gradient(rgba(255, 107, 74, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 107, 74, 0.03) 1px, transparent 1px);
+            background-size: 60px 60px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .bg-glow {
+            position: fixed;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle at 30% 20%, rgba(255, 107, 74, 0.08) 0%, transparent 50%),
+                        radial-gradient(circle at 70% 80%, rgba(139, 92, 246, 0.05) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
         }
 
         .container {
-            max-width: 1200px;
+            position: relative;
+            z-index: 1;
+            max-width: 900px;
             margin: 0 auto;
+            padding: 40px 24px;
         }
 
+        /* Header */
         .header {
-            background: white;
-            padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
             text-align: center;
-            margin-bottom: 30px;
+            margin-bottom: 48px;
+        }
+
+        .logo {
+            font-size: 48px;
+            margin-bottom: 16px;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
         }
 
         h1 {
-            color: #333;
-            margin-bottom: 10px;
+            font-size: 42px;
+            font-weight: 700;
+            letter-spacing: -1px;
+            margin-bottom: 12px;
+            background: linear-gradient(135deg, var(--text-primary) 0%, var(--accent) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
         .subtitle {
-            color: #666;
-            font-size: 16px;
+            font-size: 18px;
+            color: var(--text-secondary);
+            max-width: 500px;
+            margin: 0 auto;
+            line-height: 1.6;
         }
 
+        /* Main card */
+        .main-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 32px;
+        }
+
+        /* Cloud notice */
+        .cloud-notice {
+            background: linear-gradient(135deg, rgba(255, 107, 74, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%);
+            border: 1px solid rgba(255, 107, 74, 0.2);
+            border-radius: 12px;
+            padding: 20px 24px;
+            margin-bottom: 28px;
+            display: none;
+        }
+
+        .cloud-notice.show {
+            display: block;
+        }
+
+        .cloud-notice h3 {
+            color: var(--accent);
+            font-size: 16px;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .cloud-notice p {
+            color: var(--text-secondary);
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        /* Input section */
         .input-section {
-            background: white;
-            padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
-            margin-bottom: 30px;
+            margin-bottom: 24px;
         }
 
         .input-group {
             display: flex;
-            gap: 10px;
-            margin-bottom: 15px;
+            gap: 12px;
         }
 
         input[type="text"] {
             flex: 1;
-            padding: 15px;
-            border: 2px solid #e0e0e0;
-            border-radius: 8px;
-            font-size: 16px;
-            transition: border-color 0.3s;
+            padding: 16px 20px;
+            background: var(--bg-dark);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 14px;
+            color: var(--text-primary);
+            transition: all 0.2s;
         }
 
         input[type="text"]:focus {
             outline: none;
-            border-color: #667eea;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px var(--accent-glow);
+        }
+
+        input[type="text"]::placeholder {
+            color: var(--text-secondary);
         }
 
         button {
-            padding: 15px 40px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 16px 28px;
+            background: var(--accent);
             color: white;
             border: none;
-            border-radius: 8px;
-            font-size: 16px;
+            border-radius: 12px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 15px;
             font-weight: 600;
             cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
+            transition: all 0.2s;
+            white-space: nowrap;
         }
 
         button:hover {
             transform: translateY(-2px);
-            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 8px 24px var(--accent-glow);
         }
 
         button:active {
@@ -92,163 +200,314 @@
         }
 
         button:disabled {
-            opacity: 0.6;
+            opacity: 0.5;
             cursor: not-allowed;
+            transform: none;
         }
 
+        /* Loading */
         .loading {
             text-align: center;
-            padding: 20px;
+            padding: 40px;
             display: none;
         }
 
         .spinner {
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #667eea;
-            border-radius: 50%;
             width: 40px;
             height: 40px;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 15px;
+            border: 3px solid var(--border);
+            border-top-color: var(--accent);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto 16px;
         }
 
         @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            to { transform: rotate(360deg); }
         }
 
+        /* Error */
         .error {
-            background: #fee;
-            color: #c33;
-            padding: 15px;
-            border-radius: 8px;
+            background: rgba(248, 113, 113, 0.1);
+            border: 1px solid rgba(248, 113, 113, 0.3);
+            color: var(--error);
+            padding: 16px 20px;
+            border-radius: 12px;
             margin-bottom: 20px;
             display: none;
+            font-size: 14px;
         }
 
+        /* Results */
         .results {
             display: none;
         }
 
         .video-info {
-            background: white;
-            padding: 25px;
-            border-radius: 15px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            background: var(--bg-dark);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+
+        .video-info h2 {
+            font-size: 18px;
             margin-bottom: 20px;
+            color: var(--text-primary);
         }
 
         .info-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            margin-top: 20px;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
         }
 
         .info-item {
-            background: #f8f9fa;
-            padding: 15px;
-            border-radius: 8px;
-            border-left: 4px solid #667eea;
+            background: var(--bg-card);
+            padding: 16px;
+            border-radius: 10px;
+            border-left: 3px solid var(--accent);
         }
 
         .info-label {
-            font-size: 12px;
-            color: #666;
+            font-size: 11px;
+            color: var(--text-secondary);
             text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 5px;
+            letter-spacing: 1px;
+            margin-bottom: 6px;
         }
 
         .info-value {
-            font-size: 16px;
-            color: #333;
-            font-weight: 500;
+            font-size: 14px;
+            color: var(--text-primary);
             word-break: break-word;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
         }
 
         .copy-btn {
-            padding: 5px 12px;
-            font-size: 12px;
-            margin-left: 10px;
-            background: #667eea;
+            padding: 6px 12px;
+            font-size: 11px;
+            background: var(--border);
+            border-radius: 6px;
         }
 
+        .copy-btn:hover {
+            background: var(--accent);
+            box-shadow: none;
+            transform: none;
+        }
+
+        /* Transcript */
         .transcript-section {
-            background: white;
-            padding: 25px;
-            border-radius: 15px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            background: var(--bg-dark);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 24px;
         }
 
         .transcript-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .transcript-header h2 {
+            font-size: 18px;
         }
 
         .transcript-textarea {
             width: 100%;
-            min-height: 400px;
+            min-height: 350px;
             padding: 20px;
-            border: 2px solid #e0e0e0;
-            border-radius: 8px;
-            font-family: 'Courier New', monospace;
-            font-size: 14px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
             line-height: 1.8;
+            color: var(--text-primary);
             resize: vertical;
-            background: #f8f9fa;
-            color: #333;
         }
 
         .transcript-textarea:focus {
             outline: none;
-            border-color: #667eea;
-            background: white;
+            border-color: var(--accent);
         }
 
         .download-section {
             margin-top: 20px;
             padding-top: 20px;
-            border-top: 2px solid #e0e0e0;
+            border-top: 1px solid var(--border);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
         }
 
         .download-btn {
-            background: #28a745;
-            margin-right: 10px;
-            margin-top: 10px;
+            background: var(--success);
         }
 
         .download-btn:hover {
-            box-shadow: 0 5px 20px rgba(40, 167, 69, 0.4);
+            box-shadow: 0 8px 24px rgba(74, 222, 128, 0.3);
         }
 
-        .copy-all-btn {
-            background: #ff6b6b;
-            margin-top: 10px;
+        /* How to run locally section */
+        .local-instructions {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 32px;
         }
 
-        .copy-all-btn:hover {
-            box-shadow: 0 5px 20px rgba(255, 107, 107, 0.4);
+        .local-instructions h2 {
+            font-size: 24px;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
         }
 
-        .copied-notification {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            background: #28a745;
+        .local-instructions .subtitle {
+            text-align: left;
+            margin: 0 0 24px 0;
+            font-size: 15px;
+        }
+
+        .step {
+            background: var(--bg-dark);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 16px;
+        }
+
+        .step:last-child {
+            margin-bottom: 0;
+        }
+
+        .step-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 28px;
+            height: 28px;
+            background: var(--accent);
             color: white;
-            padding: 15px 25px;
+            border-radius: 50%;
+            font-size: 14px;
+            font-weight: 600;
+            margin-right: 12px;
+        }
+
+        .step h3 {
+            display: inline;
+            font-size: 16px;
+        }
+
+        .step p {
+            color: var(--text-secondary);
+            font-size: 14px;
+            margin: 12px 0 0 40px;
+            line-height: 1.6;
+        }
+
+        .code-block {
+            background: #1a1a2e;
+            border: 1px solid var(--border);
             border-radius: 8px;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+            padding: 16px;
+            margin: 12px 0 0 40px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            color: var(--accent);
+            overflow-x: auto;
+        }
+
+        /* GitHub link */
+        .github-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-primary);
+            text-decoration: none;
+            padding: 12px 20px;
+            background: var(--bg-dark);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s;
+            margin-top: 20px;
+        }
+
+        .github-link:hover {
+            border-color: var(--accent);
+            transform: translateY(-2px);
+        }
+
+        /* Features */
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 16px;
+            margin-top: 32px;
+        }
+
+        .feature {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            transition: all 0.2s;
+        }
+
+        .feature:hover {
+            border-color: var(--accent);
+            transform: translateY(-2px);
+        }
+
+        .feature-icon {
+            font-size: 24px;
+            margin-bottom: 12px;
+        }
+
+        .feature h3 {
+            font-size: 15px;
+            margin-bottom: 6px;
+        }
+
+        .feature p {
+            font-size: 13px;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        /* Notification */
+        .notification {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: var(--success);
+            color: #0a0a0f;
+            padding: 14px 24px;
+            border-radius: 10px;
+            font-weight: 500;
             display: none;
             animation: slideIn 0.3s ease;
+            z-index: 100;
         }
 
         @keyframes slideIn {
             from {
-                transform: translateX(400px);
+                transform: translateX(100px);
                 opacity: 0;
             }
             to {
@@ -256,114 +515,195 @@
                 opacity: 1;
             }
         }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 40px 0;
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        .footer a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+
+        @media (max-width: 600px) {
+            h1 { font-size: 32px; }
+            .input-group { flex-direction: column; }
+            .container { padding: 24px 16px; }
+        }
     </style>
 </head>
 <body>
+    <div class="bg-grid"></div>
+    <div class="bg-glow"></div>
+
     <div class="container">
         <div class="header">
-            <h1>🎥 YouTube Transcript Extractor</h1>
-            <p class="subtitle">Extract timestamped transcripts with easy copy-paste fields</p>
+            <div class="logo">📺</div>
+            <h1>YouTube Transcript Extractor</h1>
+            <p class="subtitle">Extract timestamped transcripts from any YouTube video. Copy, download, and use however you need.</p>
         </div>
 
-        <div class="input-section">
-            <div class="input-group">
-                <input
-                    type="text"
-                    id="videoUrl"
-                    placeholder="Paste YouTube URL here (e.g., https://www.youtube.com/watch?v=...)"
-                    autofocus
-                >
-                <button onclick="extractTranscript()" id="extractBtn">Extract Transcript</button>
+        <div class="main-card">
+            <div class="cloud-notice" id="cloudNotice">
+                <h3>☁️ Running on Cloud</h3>
+                <p>YouTube blocks requests from cloud servers. For full functionality, run this tool locally on your computer (it's easy—see instructions below). The extractor works perfectly from your home network!</p>
             </div>
-            <p style="color: #666; font-size: 14px; margin-top: 10px;">
-                💡 Tip: Works with any YouTube URL format
-            </p>
-        </div>
 
-        <div class="loading" id="loading">
-            <div class="spinner"></div>
-            <p>Extracting transcript...</p>
-        </div>
-
-        <div class="error" id="error"></div>
-
-        <div class="results" id="results">
-            <div class="video-info">
-                <h2 style="margin-bottom: 15px;">📋 Video Information</h2>
-                <div class="info-grid">
-                    <div class="info-item">
-                        <div class="info-label">Video ID</div>
-                        <div class="info-value" id="videoId">-</div>
-                        <button class="copy-btn" onclick="copyToClipboard('videoId')">Copy</button>
-                    </div>
-                    <div class="info-item">
-                        <div class="info-label">Video Title</div>
-                        <div class="info-value" id="videoTitle">-</div>
-                        <button class="copy-btn" onclick="copyToClipboard('videoTitle')">Copy</button>
-                    </div>
-                    <div class="info-item">
-                        <div class="info-label">Channel Name</div>
-                        <div class="info-value" id="channelName">-</div>
-                        <button class="copy-btn" onclick="copyToClipboard('channelName')">Copy</button>
-                    </div>
-                    <div class="info-item">
-                        <div class="info-label">Video URL</div>
-                        <div class="info-value" id="videoUrl_display">-</div>
-                        <button class="copy-btn" onclick="copyToClipboard('videoUrl_display')">Copy</button>
-                    </div>
-                    <div class="info-item">
-                        <div class="info-label">Language</div>
-                        <div class="info-value" id="language">-</div>
-                    </div>
-                    <div class="info-item">
-                        <div class="info-label">Total Entries</div>
-                        <div class="info-value" id="totalEntries">-</div>
-                    </div>
+            <div class="input-section">
+                <div class="input-group">
+                    <input
+                        type="text"
+                        id="videoUrl"
+                        placeholder="Paste YouTube URL here..."
+                        autofocus
+                    >
+                    <button onclick="extractTranscript()" id="extractBtn">Extract</button>
                 </div>
             </div>
 
-            <div class="transcript-section">
-                <div class="transcript-header">
-                    <h2>📝 Transcript</h2>
-                    <button class="copy-btn" onclick="copyAllTranscript()">Copy All Text</button>
-                </div>
-                <p style="color: #666; margin-bottom: 15px;">
-                    💡 Tip: Click and drag to select specific lines, or click "Copy All Text" to copy everything
-                </p>
-                <textarea id="transcriptText" class="transcript-textarea" readonly></textarea>
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <p style="color: var(--text-secondary);">Extracting transcript...</p>
+            </div>
 
-                <div class="download-section">
-                    <h3 style="margin-bottom: 15px;">💾 Download Options</h3>
-                    <button class="download-btn" onclick="downloadJSON()">Download JSON</button>
-                    <button class="download-btn" onclick="downloadCSV()">Download CSV</button>
+            <div class="error" id="error"></div>
+
+            <div class="results" id="results">
+                <div class="video-info">
+                    <h2>📋 Video Info</h2>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <div class="info-label">Title</div>
+                            <div class="info-value">
+                                <span id="videoTitle">-</span>
+                                <button class="copy-btn" onclick="copyToClipboard('videoTitle')">Copy</button>
+                            </div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Channel</div>
+                            <div class="info-value">
+                                <span id="channelName">-</span>
+                                <button class="copy-btn" onclick="copyToClipboard('channelName')">Copy</button>
+                            </div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Video ID</div>
+                            <div class="info-value">
+                                <span id="videoId">-</span>
+                                <button class="copy-btn" onclick="copyToClipboard('videoId')">Copy</button>
+                            </div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Language</div>
+                            <div class="info-value">
+                                <span id="language">-</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="transcript-section">
+                    <div class="transcript-header">
+                        <h2>📝 Transcript</h2>
+                        <button class="copy-btn" onclick="copyAllTranscript()">Copy All</button>
+                    </div>
+                    <textarea id="transcriptText" class="transcript-textarea" readonly></textarea>
+
+                    <div class="download-section">
+                        <button class="download-btn" onclick="downloadJSON()">Download JSON</button>
+                        <button class="download-btn" onclick="downloadCSV()">Download CSV</button>
+                    </div>
                 </div>
             </div>
+        </div>
+
+        <div class="local-instructions" id="localInstructions">
+            <h2>💻 Run Locally for Best Results</h2>
+            <p class="subtitle">Works perfectly from your computer. Just 3 commands!</p>
+
+            <div class="step">
+                <span class="step-number">1</span>
+                <h3>Clone the repository</h3>
+                <div class="code-block">git clone https://github.com/YOUR_USERNAME/youtube-transcript-extractor.git<br>cd youtube-transcript-extractor</div>
+            </div>
+
+            <div class="step">
+                <span class="step-number">2</span>
+                <h3>Install dependencies</h3>
+                <div class="code-block">pip install -r requirements.txt</div>
+            </div>
+
+            <div class="step">
+                <span class="step-number">3</span>
+                <h3>Start the web app</h3>
+                <div class="code-block">python web_app.py</div>
+                <p>Then open <strong style="color: var(--accent);">http://localhost:8080</strong> in your browser</p>
+            </div>
+
+            <a href="https://github.com/YOUR_USERNAME/youtube-transcript-extractor" target="_blank" class="github-link">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+                View on GitHub
+            </a>
+        </div>
+
+        <div class="features">
+            <div class="feature">
+                <div class="feature-icon">⏱️</div>
+                <h3>Timestamped Output</h3>
+                <p>Every line includes HH:MM:SS timestamps for easy reference</p>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">📋</div>
+                <h3>One-Click Copy</h3>
+                <p>Copy any field or the entire transcript instantly</p>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">💾</div>
+                <h3>Multiple Formats</h3>
+                <p>Download as JSON or CSV for your workflow</p>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">🔗</div>
+                <h3>Any URL Format</h3>
+                <p>Supports youtube.com, youtu.be, embeds, and video IDs</p>
+            </div>
+        </div>
+
+        <div class="footer">
+            Made with ❤️ for anyone who needs YouTube transcripts<br>
+            <a href="https://github.com/YOUR_USERNAME/youtube-transcript-extractor">GitHub</a> · Free & Open Source
         </div>
     </div>
 
-    <div class="copied-notification" id="copiedNotification">
-        ✓ Copied to clipboard!
-    </div>
+    <div class="notification" id="notification">✓ Copied to clipboard!</div>
 
     <script>
         let currentData = null;
 
-        // Allow Enter key to submit
+        // Detect if running on cloud (Vercel, etc.)
+        const isCloud = window.location.hostname !== 'localhost' && 
+                        window.location.hostname !== '127.0.0.1';
+        
+        if (isCloud) {
+            document.getElementById('cloudNotice').classList.add('show');
+        }
+
+        // Enter key support
         document.getElementById('videoUrl').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                extractTranscript();
-            }
+            if (e.key === 'Enter') extractTranscript();
         });
 
         async function extractTranscript() {
             const url = document.getElementById('videoUrl').value.trim();
-
             if (!url) {
                 showError('Please enter a YouTube URL');
                 return;
             }
 
-            // Show loading, hide error and results
             document.getElementById('loading').style.display = 'block';
             document.getElementById('error').style.display = 'none';
             document.getElementById('results').style.display = 'none';
@@ -372,16 +712,19 @@
             try {
                 const response = await fetch('/extract', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ url: url })
                 });
 
                 const data = await response.json();
 
                 if (data.error) {
-                    showError(data.error);
+                    // Check if it's a cloud IP block error
+                    if (data.error.includes('RequestBlocked') || data.error.includes('IP')) {
+                        showError('YouTube blocked this request from cloud servers. Please run the tool locally for full functionality (see instructions below).');
+                    } else {
+                        showError(data.error);
+                    }
                 } else {
                     currentData = data;
                     displayResults(data);
@@ -395,23 +738,22 @@
         }
 
         function displayResults(data) {
-            // Display video info
             document.getElementById('videoId').textContent = data.video_id;
             document.getElementById('videoTitle').textContent = data.video_title;
             document.getElementById('channelName').textContent = data.channel_name || 'N/A';
-            document.getElementById('videoUrl_display').textContent = data.video_url;
             document.getElementById('language').textContent = data.language;
-            document.getElementById('totalEntries').textContent = data.total_entries;
 
-            // Display full transcript in textarea
             const transcriptText = data.transcript.map(entry =>
                 `[${entry.timestamp}] ${entry.text}`
             ).join('\n');
 
             document.getElementById('transcriptText').value = transcriptText;
-
-            // Show results
             document.getElementById('results').style.display = 'block';
+            
+            // Hide local instructions on success
+            if (!isCloud) {
+                document.getElementById('localInstructions').style.display = 'none';
+            }
         }
 
         function showError(message) {
@@ -421,63 +763,42 @@
         }
 
         function copyToClipboard(elementId) {
-            const element = document.getElementById(elementId);
-            const text = element.textContent;
-
-            navigator.clipboard.writeText(text).then(() => {
-                showCopiedNotification();
-            });
+            const text = document.getElementById(elementId).textContent;
+            navigator.clipboard.writeText(text).then(showNotification);
         }
 
         function copyAllTranscript() {
             const textarea = document.getElementById('transcriptText');
-            textarea.select();
-            document.execCommand('copy');
-            showCopiedNotification();
+            navigator.clipboard.writeText(textarea.value).then(showNotification);
         }
 
-        function showCopiedNotification() {
-            const notification = document.getElementById('copiedNotification');
+        function showNotification() {
+            const notification = document.getElementById('notification');
             notification.style.display = 'block';
-            setTimeout(() => {
-                notification.style.display = 'none';
-            }, 2000);
+            setTimeout(() => notification.style.display = 'none', 2000);
         }
 
         function downloadJSON() {
             const dataStr = JSON.stringify(currentData.full_json, null, 2);
-            const blob = new Blob([dataStr], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `${currentData.video_id}_transcript.json`;
-            a.click();
+            downloadFile(dataStr, `${currentData.video_id}_transcript.json`, 'application/json');
         }
 
         function downloadCSV() {
-            let csv = 'Video ID,Video Title,Video URL,Channel Name,Timestamp,Start Time (seconds),Duration (seconds),Text,URL with Timestamp\n';
-
+            let csv = 'Timestamp,Start (seconds),Duration,Text,URL with Timestamp\n';
             currentData.transcript.forEach(entry => {
-                const row = [
-                    currentData.video_id,
-                    currentData.video_title,
-                    currentData.video_url,
-                    currentData.channel_name || '',
-                    entry.timestamp,
-                    entry.start_seconds,
-                    entry.duration,
-                    `"${entry.text.replace(/"/g, '""')}"`,
-                    entry.url_with_timestamp
-                ].join(',');
-                csv += row + '\n';
+                csv += `"${entry.timestamp}",${entry.start_seconds},${entry.duration},"${entry.text.replace(/"/g, '""')}","${entry.url_with_timestamp}"\n`;
             });
+            downloadFile(csv, `${currentData.video_id}_transcript.csv`, 'text/csv');
+        }
 
-            const blob = new Blob([csv], { type: 'text/csv' });
+        function downloadFile(content, filename, type) {
+            const blob = new Blob([content], { type });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `${currentData.video_id}_transcript.csv`;
+            a.download = filename;
             a.click();
+            URL.revokeObjectURL(url);
         }
     </script>
 </body>
