@@ -4,7 +4,7 @@ A simple, reliable tool to extract timestamped transcripts from any YouTube vide
 
 ## 🌐 Live Demo
 
-**[Try it now →](https://your-app.vercel.app)** *(Update this link after deploying)*
+**[Try it now →](https://youtube-transcript-extractor-nine.vercel.app)**
 
 ## ✨ Features
 
@@ -20,7 +20,7 @@ A simple, reliable tool to extract timestamped transcripts from any YouTube vide
 
 ```bash
 # Clone the repo
-git clone https://github.com/YOUR_USERNAME/youtube-transcript-extractor.git
+git clone https://github.com/SsandrockK/youtube-transcript-extractor.git
 cd youtube-transcript-extractor
 
 # Install dependencies
